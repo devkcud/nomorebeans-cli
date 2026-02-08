@@ -11,14 +11,20 @@ type commandWrapper struct {
 	cmd *cli.Command
 }
 
-func New(name string) *commandWrapper {
-	return &commandWrapper{
+func New(name string, usage ...string) *commandWrapper {
+	cmd := &commandWrapper{
 		cmd: &cli.Command{
 			UseShortOptionHandling: true,
 			Suggest:                true,
 			Name:                   name,
 		},
 	}
+
+	if len(usage) > 0 {
+		cmd.cmd.Usage = usage[0]
+	}
+
+	return cmd
 }
 
 func (cw *commandWrapper) WithUsage(usage string) *commandWrapper {
