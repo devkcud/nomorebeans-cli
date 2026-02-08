@@ -1,19 +1,29 @@
 package command
 
-import "github.com/urfave/cli/v3"
+import (
+	"context"
+	"os"
+
+	"github.com/urfave/cli/v3"
+)
 
 type commandWrapper struct {
 	cmd *cli.Command
 }
 
-func New(name, usage string) *commandWrapper {
+func New(name string) *commandWrapper {
 	return &commandWrapper{
 		cmd: &cli.Command{
-			Name:    name,
-			Usage:   usage,
-			Authors: []any{"devkcud"},
+			UseShortOptionHandling: true,
+			Suggest:                true,
+			Name:                   name,
 		},
 	}
+}
+
+func (cw *commandWrapper) WithUsage(usage string) *commandWrapper {
+	cw.cmd.Usage = usage
+	return cw
 }
 
 func (cw *commandWrapper) WithDescription(description string) *commandWrapper {
@@ -23,6 +33,13 @@ func (cw *commandWrapper) WithDescription(description string) *commandWrapper {
 
 func (cw *commandWrapper) WithVersion(version string) *commandWrapper {
 	cw.cmd.Version = version
+	return cw
+}
+
+func (cw *commandWrapper) WithAuthors(authors ...string) *commandWrapper {
+	for _, author := range authors {
+		cw.cmd.Authors = append(cw.cmd.Authors, author)
+	}
 	return cw
 }
 
@@ -45,9 +62,16 @@ func (cw *commandWrapper) WithCommands(subcommands ...*commandWrapper) *commandW
 	for _, subcmd := range subcommands {
 		cw.cmd.Commands = append(cw.cmd.Commands, subcmd.cmd)
 	}
-
 	return cw
 }
 
-// TODO: Add WithFlags method
-// func (cw *commandWrapper) WithFlags() *commandWrapper
+func (cw *commandWrapper) Run() error {
+	return cw.cmd.Run(context.Background(), os.Args)
+}
+
+func (cw *commandWrapper) WithFlags(flags ...*flagWrapper) *commandWrapper {
+	for _, flag := range flags {
+		cw.cmd.Flags = append(cw.cmd.Flags, flag.flag)
+	}
+	return cw
+}

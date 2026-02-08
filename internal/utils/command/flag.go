@@ -10,19 +10,36 @@ type flagWrapper struct {
 	flag cli.Flag
 }
 
-var flagMap map[string]cli.Flag = map[string]cli.Flag{
-	"string": &cli.StringFlag{},
+type flagFactory func(long string, short []string) cli.Flag
+type flagKind interface {
+	string | bool
 }
 
-func NewFlag[T any](long string, short ...string) *flagWrapper {
-	t := reflect.TypeFor[T]()
+var factories = map[reflect.Type]flagFactory{
+	reflect.TypeFor[string](): func(long string, short []string) cli.Flag {
+		return &cli.StringFlag{Name: long, Aliases: short}
+	},
+	reflect.TypeFor[bool](): func(long string, short []string) cli.Flag {
+		return &cli.BoolFlag{Name: long, Aliases: short}
+	},
+}
 
-	flag, exists := flagMap[t.String()]
-	if exists {
-		return nil
+func NewFlag[T flagKind](long string, short ...string) *flagWrapper {
+	factory, ok := factories[reflect.TypeFor[T]()]
+	if !ok {
+		panic("unsupported flag type")
 	}
 
-	flag.Set("Name", long)
+	return &flagWrapper{flag: factory(long, short)}
+}
 
-	return &flagWrapper{flag}
+func (fw *flagWrapper) WithUsage(usage string) *flagWrapper {
+	switch f := fw.flag.(type) {
+	case *cli.StringFlag:
+		f.Usage = usage
+	case *cli.BoolFlag:
+		f.Usage = usage
+	}
+
+	return fw
 }
