@@ -1,18 +1,6 @@
 package main
 
-import (
-	"context"
-	"errors"
-	"fmt"
-	"sort"
-	"strconv"
-	"strings"
-
-	"github.com/devkcud/nomorebeans-cli/internal/utils/command"
-	"github.com/devkcud/nomorebeans-cli/internal/utils/currency"
-	"github.com/devkcud/nomorebeans-cli/internal/utils/generic"
-	"github.com/urfave/cli/v3"
-)
+import "github.com/devkcud/nomorebeans-cli/internal/utils/command"
 
 func main() {
 	command.

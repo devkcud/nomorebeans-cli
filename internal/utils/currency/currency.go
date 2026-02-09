@@ -43,4 +43,3 @@ var stringToCurrency = func() map[string]Currency {
 func Supported() iter.Seq[Currency] {
 	return maps.Keys(currencyToString)
 }
-
