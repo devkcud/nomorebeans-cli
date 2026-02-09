@@ -23,11 +23,16 @@ func New(name string, aliases ...string) *commandWrapper {
 }
 
 func (cw *commandWrapper) WithUsage(usage string) *commandWrapper {
-	cw.cmd.Usage = usage
+	cw.cmd.UsageText = usage
 	return cw
 }
 
-func (cw *commandWrapper) WithDescription(description string) *commandWrapper {
+func (cw *commandWrapper) WithShortDescription(description string) *commandWrapper {
+	cw.cmd.Usage = description
+	return cw
+}
+
+func (cw *commandWrapper) WithLongDescription(description string) *commandWrapper {
 	cw.cmd.Description = description
 	return cw
 }

@@ -1,71 +1,34 @@
 package command
 
-import (
-	"reflect"
+import "github.com/urfave/cli/v3"
 
-	"github.com/urfave/cli/v3"
-)
-
-type flagWrapper struct {
+type flagWrapper[T any] struct {
 	flag cli.Flag
+	spec flagSpec[T]
 }
 
-type flagFactory func(long string, short []string) cli.Flag
-type flagKind interface {
-	string | bool | int | float64
-}
+func NewFlag[T any](long string, short ...string) *flagWrapper[T] {
+	key := *new(T)
 
-var factories = map[reflect.Type]flagFactory{
-	reflect.TypeFor[string](): func(long string, short []string) cli.Flag {
-		return &cli.StringFlag{Name: long, Aliases: short}
-	},
-	reflect.TypeFor[bool](): func(long string, short []string) cli.Flag {
-		return &cli.BoolFlag{Name: long, Aliases: short}
-	},
-	reflect.TypeFor[int](): func(long string, short []string) cli.Flag {
-		return &cli.IntFlag{Name: long, Aliases: short}
-	},
-	reflect.TypeFor[float64](): func(long string, short []string) cli.Flag {
-		return &cli.Float64Flag{Name: long, Aliases: short}
-	},
-}
-
-func NewFlag[T flagKind](long string, short ...string) *flagWrapper {
-	factory, ok := factories[reflect.TypeFor[T]()]
+	specAny, ok := flagSpecs[key]
 	if !ok {
 		panic("unsupported flag type")
 	}
 
-	return &flagWrapper{flag: factory(long, short)}
+	spec := specAny.(flagSpec[T])
+
+	return &flagWrapper[T]{
+		flag: spec.new(long, short),
+		spec: spec,
+	}
 }
 
-func (fw *flagWrapper) WithUsage(usage string) *flagWrapper {
-	switch f := fw.flag.(type) {
-	case *cli.StringFlag:
-		f.Usage = usage
-	case *cli.BoolFlag:
-		f.Usage = usage
-	case *cli.IntFlag:
-		f.Usage = usage
-	case *cli.Float64Flag:
-		f.Usage = usage
-	}
-
+func (fw *flagWrapper[T]) WithUsage(usage string) *flagWrapper[T] {
+	fw.spec.setUsage(fw.flag, usage)
 	return fw
 }
 
-// WARNING: Make sure that the value is of the same type of the flag
-func (fw *flagWrapper) WithDefaultValue(value any) *flagWrapper {
-	switch f := fw.flag.(type) {
-	case *cli.StringFlag:
-		f.Value = value.(string)
-	case *cli.BoolFlag:
-		f.Value = value.(bool)
-	case *cli.IntFlag:
-		f.Value = value.(int)
-	case *cli.Float64Flag:
-		f.Value = value.(float64)
-	}
-
+func (fw *flagWrapper[T]) WithDefaultValue(value T) *flagWrapper[T] {
+	fw.spec.setDefault(fw.flag, value)
 	return fw
 }
