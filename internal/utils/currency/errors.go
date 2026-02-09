@@ -5,5 +5,4 @@ import "errors"
 var (
 	ErrUnknownCurrencyId  = errors.New("unknown currency id")
 	ErrInvalidAPIResponse = errors.New("invalid API response format; internal method error")
-	ErrTooManyArguments   = errors.New("too many arguments passed")
 )

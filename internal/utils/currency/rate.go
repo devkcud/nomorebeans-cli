@@ -1,5 +1,7 @@
 package currency
 
+import "github.com/devkcud/nomorebeans-cli/internal/utils/generic"
+
 type Rate float64
 
 // RateMap[from] = rate to base
@@ -14,7 +16,7 @@ func Rates(base ...Currency) (RateMap, error) {
 	case 1:
 		return request(base[0])
 	default:
-		return nil, ErrTooManyArguments
+		return nil, generic.ErrTooManyArguments
 	}
 }
 

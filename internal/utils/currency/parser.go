@@ -1,5 +1,7 @@
 package currency
 
+import "github.com/devkcud/nomorebeans-cli/internal/utils/generic"
+
 type StringifyOptions struct {
 	Friendly bool
 }
@@ -16,7 +18,7 @@ var friendlyName = map[Currency]string{
 
 func Stringify(c Currency, opts ...StringifyOptions) (string, error) {
 	if len(opts) > 1 {
-		return "", ErrTooManyArguments
+		return "", generic.ErrTooManyArguments
 	}
 
 	m := currencyToString
