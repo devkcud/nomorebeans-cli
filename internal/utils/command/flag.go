@@ -12,7 +12,7 @@ type flagWrapper struct {
 
 type flagFactory func(long string, short []string) cli.Flag
 type flagKind interface {
-	string | bool
+	string | bool | int | float64
 }
 
 var factories = map[reflect.Type]flagFactory{
@@ -21,6 +21,12 @@ var factories = map[reflect.Type]flagFactory{
 	},
 	reflect.TypeFor[bool](): func(long string, short []string) cli.Flag {
 		return &cli.BoolFlag{Name: long, Aliases: short}
+	},
+	reflect.TypeFor[int](): func(long string, short []string) cli.Flag {
+		return &cli.IntFlag{Name: long, Aliases: short}
+	},
+	reflect.TypeFor[float64](): func(long string, short []string) cli.Flag {
+		return &cli.Float64Flag{Name: long, Aliases: short}
 	},
 }
 
@@ -39,6 +45,10 @@ func (fw *flagWrapper) WithUsage(usage string) *flagWrapper {
 		f.Usage = usage
 	case *cli.BoolFlag:
 		f.Usage = usage
+	case *cli.IntFlag:
+		f.Usage = usage
+	case *cli.Float64Flag:
+		f.Usage = usage
 	}
 
 	return fw
@@ -51,6 +61,10 @@ func (fw *flagWrapper) WithDefaultValue(value any) *flagWrapper {
 		f.Value = value.(string)
 	case *cli.BoolFlag:
 		f.Value = value.(bool)
+	case *cli.IntFlag:
+		f.Value = value.(int)
+	case *cli.Float64Flag:
+		f.Value = value.(float64)
 	}
 
 	return fw
