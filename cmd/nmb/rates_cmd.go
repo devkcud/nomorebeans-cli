@@ -13,6 +13,7 @@ import (
 func newRatesCommand() *command.Command {
 	return command.
 		New("rates").
+		WithShortDescription("Check all available currencies and their rates").
 		WithFlags(
 			command.
 				NewFlag[string]("base", "b").

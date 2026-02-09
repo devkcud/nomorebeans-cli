@@ -16,6 +16,7 @@ import (
 func newExchangeCommand() *command.Command {
 	return command.
 		New("exchange", "ex").
+		WithShortDescription("Exchange currencies in a simpler way").
 		WithUsage("[--from=rate] --to=rate [--value=float | value]").
 		WithFlags(
 			command.
