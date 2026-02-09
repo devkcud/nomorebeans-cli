@@ -1,9 +1,13 @@
 package main
 
-import "github.com/devkcud/nomorebeans-cli/internal/utils/command"
+import (
+	"fmt"
+
+	"github.com/devkcud/nomorebeans-cli/internal/utils/command"
+)
 
 func main() {
-	command.
+	err := command.
 		New("nmb").
 		WithShortDescription("a cli finance tracking").
 		WithAuthors("devkcud").
@@ -12,4 +16,7 @@ func main() {
 			newExchangeCommand(),
 		).
 		Run()
+	if err != nil {
+		fmt.Println("Err:", err)
+	}
 }
