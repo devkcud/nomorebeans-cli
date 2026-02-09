@@ -17,7 +17,7 @@ import (
 func main() {
 	command.
 		New("nmb").
-		WithUsage("a cli finance tracking").
+		WithShortDescription("a cli finance tracking").
 		WithAuthors("devkcud").
 		WithCommands(
 			command.
@@ -103,7 +103,7 @@ func main() {
 				WithCommands(
 					command.
 						New("supported", "sup").
-						WithUsage("See supported currencies").
+						WithShortDescription("See supported currencies").
 						WithAction(func(ctx context.Context, c *cli.Command) error {
 							supported := currency.Supported()
 
