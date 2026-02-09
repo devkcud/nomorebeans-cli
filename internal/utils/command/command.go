@@ -7,12 +7,12 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-type commandWrapper struct {
+type Command struct {
 	cmd *cli.Command
 }
 
-func New(name string, aliases ...string) *commandWrapper {
-	return &commandWrapper{
+func New(name string, aliases ...string) *Command {
+	return &Command{
 		cmd: &cli.Command{
 			UseShortOptionHandling: true,
 			Suggest:                true,
@@ -22,62 +22,62 @@ func New(name string, aliases ...string) *commandWrapper {
 	}
 }
 
-func (cw *commandWrapper) WithUsage(usage string) *commandWrapper {
-	cw.cmd.UsageText = usage
-	return cw
+func (c *Command) WithUsage(usage string) *Command {
+	c.cmd.UsageText = usage
+	return c
 }
 
-func (cw *commandWrapper) WithShortDescription(description string) *commandWrapper {
-	cw.cmd.Usage = description
-	return cw
+func (c *Command) WithShortDescription(description string) *Command {
+	c.cmd.Usage = description
+	return c
 }
 
-func (cw *commandWrapper) WithLongDescription(description string) *commandWrapper {
-	cw.cmd.Description = description
-	return cw
+func (c *Command) WithLongDescription(description string) *Command {
+	c.cmd.Description = description
+	return c
 }
 
-func (cw *commandWrapper) WithVersion(version string) *commandWrapper {
-	cw.cmd.Version = version
-	return cw
+func (c *Command) WithVersion(version string) *Command {
+	c.cmd.Version = version
+	return c
 }
 
-func (cw *commandWrapper) WithAuthors(authors ...string) *commandWrapper {
+func (c *Command) WithAuthors(authors ...string) *Command {
 	for _, author := range authors {
-		cw.cmd.Authors = append(cw.cmd.Authors, author)
+		c.cmd.Authors = append(c.cmd.Authors, author)
 	}
-	return cw
+	return c
 }
 
-func (cw *commandWrapper) WithHookBefore(hook cli.BeforeFunc) *commandWrapper {
-	cw.cmd.Before = hook
-	return cw
+func (c *Command) WithHookBefore(hook cli.BeforeFunc) *Command {
+	c.cmd.Before = hook
+	return c
 }
 
-func (cw *commandWrapper) WithHookAfter(hook cli.AfterFunc) *commandWrapper {
-	cw.cmd.After = hook
-	return cw
+func (c *Command) WithHookAfter(hook cli.AfterFunc) *Command {
+	c.cmd.After = hook
+	return c
 }
 
-func (cw *commandWrapper) WithAction(action cli.ActionFunc) *commandWrapper {
-	cw.cmd.Action = action
-	return cw
+func (c *Command) WithAction(action cli.ActionFunc) *Command {
+	c.cmd.Action = action
+	return c
 }
 
-func (cw *commandWrapper) WithCommands(subcommands ...*commandWrapper) *commandWrapper {
+func (c *Command) WithCommands(subcommands ...*Command) *Command {
 	for _, subcmd := range subcommands {
-		cw.cmd.Commands = append(cw.cmd.Commands, subcmd.cmd)
+		c.cmd.Commands = append(c.cmd.Commands, subcmd.cmd)
 	}
-	return cw
+	return c
 }
 
-func (cw *commandWrapper) Run() error {
-	return cw.cmd.Run(context.Background(), os.Args)
+func (c *Command) Run() error {
+	return c.cmd.Run(context.Background(), os.Args)
 }
 
-func (cw *commandWrapper) WithFlags(flags ...*flagWrapper) *commandWrapper {
+func (c *Command) WithFlags(flags ...aflag) *Command {
 	for _, flag := range flags {
-		cw.cmd.Flags = append(cw.cmd.Flags, flag.flag)
+		c.cmd.Flags = append(c.cmd.Flags, flag.cliFlag())
 	}
-	return cw
+	return c
 }

@@ -2,12 +2,16 @@ package command
 
 import "github.com/urfave/cli/v3"
 
-type flagWrapper[T any] struct {
+type Flag[T any] struct {
 	flag cli.Flag
 	spec flagSpec[T]
 }
 
-func NewFlag[T any](long string, short ...string) *flagWrapper[T] {
+type aflag interface {
+	cliFlag() cli.Flag
+}
+
+func NewFlag[T any](long string, short ...string) *Flag[T] {
 	key := *new(T)
 
 	specAny, ok := flagSpecs[key]
@@ -17,18 +21,22 @@ func NewFlag[T any](long string, short ...string) *flagWrapper[T] {
 
 	spec := specAny.(flagSpec[T])
 
-	return &flagWrapper[T]{
+	return &Flag[T]{
 		flag: spec.new(long, short),
 		spec: spec,
 	}
 }
 
-func (fw *flagWrapper[T]) WithUsage(usage string) *flagWrapper[T] {
-	fw.spec.setUsage(fw.flag, usage)
-	return fw
+func (f *Flag[T]) WithUsage(usage string) *Flag[T] {
+	f.spec.setUsage(f.flag, usage)
+	return f
 }
 
-func (fw *flagWrapper[T]) WithDefaultValue(value T) *flagWrapper[T] {
-	fw.spec.setDefault(fw.flag, value)
-	return fw
+func (f *Flag[T]) WithDefaultValue(value T) *Flag[T] {
+	f.spec.setDefault(f.flag, value)
+	return f
+}
+
+func (f *Flag[T]) cliFlag() cli.Flag {
+	return f.flag
 }
