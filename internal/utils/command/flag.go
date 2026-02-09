@@ -43,3 +43,15 @@ func (fw *flagWrapper) WithUsage(usage string) *flagWrapper {
 
 	return fw
 }
+
+// WARNING: Make sure that the value is of the same type of the flag
+func (fw *flagWrapper) WithDefaultValue(value any) *flagWrapper {
+	switch f := fw.flag.(type) {
+	case *cli.StringFlag:
+		f.Value = value.(string)
+	case *cli.BoolFlag:
+		f.Value = value.(bool)
+	}
+
+	return fw
+}
